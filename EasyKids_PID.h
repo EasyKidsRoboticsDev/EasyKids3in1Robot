@@ -50,6 +50,7 @@ void sensorNum(int num)
     NumSensor = num;
     setPoint = (NumSensor - 1) * 100 / 2;
     lastPosition = (NumSensor - 1) * 100 / 2;
+    pwmMotor.setPWMFreq(1000);
 }
 
 void whiteLine() { invertedLine = true; }
@@ -66,11 +67,11 @@ int readline()
 
         if (invertedLine)
         { // White line
-            value = map(analog(Pin_Setup[i]), Sensor_Min[i], Sensor_Max[i], 1, 100);
+            value = map(analog(Pin_Setup[i]), Sensor_Min[i], Sensor_Max[i], 100, 1);
         }
         else
         { // Black line
-            value = map(analog(Pin_Setup[i]), Sensor_Min[i], Sensor_Max[i], 100, 1);
+            value = map(analog(Pin_Setup[i]), Sensor_Min[i], Sensor_Max[i], 1, 100);
         }
         value = clamp(value, 1, 100);
 
@@ -105,8 +106,8 @@ int readline()
 
 void trackPID(int min_speed, float iKP, float iKD)
 {
-    KP = iKP;
-    KD = iKD;
+    KP = iKP / 10;
+    KD = iKD / 10;
 
     errors = (readline() - setPoint);
     Serial.println(readline());
