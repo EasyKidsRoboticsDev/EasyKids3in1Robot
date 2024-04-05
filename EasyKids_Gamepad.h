@@ -21,6 +21,7 @@ int joyStart;
 int joySelect;
 int joyPad;
 
+#define BP32_MAX_GAMEPADS 1
 GamepadPtr joystick[BP32_MAX_GAMEPADS];
 
 void onConnectedGamepad(GamepadPtr gp) {

@@ -146,6 +146,30 @@ sw_Start	KEYWORD2	Min
 testServo	KEYWORD2	Pow
 vr	KEYWORD2
 EasyKids_Setup	KEYWORD2
+EasyKidsIMUsetup    KEYWORD2
+resetGyro    KEYWORD2
+getProcessedGyro    KEYWORD2
+forwardTimeIMU    KEYWORD2
+backwardTimeIMU    KEYWORD2
+spinLeftIMU    KEYWORD2
+spinRightIMU    KEYWORD2
+slideLeftIMU    KEYWORD2
+slideRightIMU    KEYWORD2
+readSensor    KEYWORD2
+blackLine    KEYWORD2
+whiteLine    KEYWORD2
+sensorNum    KEYWORD2
+setSensorMin    KEYWORD2
+setSensorMax    KEYWORD2
+trackPID    KEYWORD2
+lineFollowTime    KEYWORD2
+lineFollowCross    KEYWORD2
+lineFollowFork    KEYWORD2
+lineFollow90Left    KEYWORD2
+lineFollow90Right    KEYWORD2
+lineFollowTurnLeft    KEYWORD2
+lineFollowTurnRight    KEYWORD2
+
 
 # KEYWORD3 specifies structures
 

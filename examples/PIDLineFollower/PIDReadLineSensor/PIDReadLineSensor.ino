@@ -1,9 +1,12 @@
-#include <EasyKids3in1.h>>
+#include <EasyKids3in1.h>
 
 void setup() {
   EasyKids_Setup();
+  sensorNum(7); // Sensor amount (4 - 7)
+  blackLine(); // Black Line
+  // whiteLine(); // White Line
 }
 
 void loop() {
-  readSensor(); //Show Value 7 Sensor via LCD Display
+  readSensor(); // Show Value Sensor via LCD Display
 }
