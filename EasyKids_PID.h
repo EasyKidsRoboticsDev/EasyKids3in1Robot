@@ -77,7 +77,7 @@ int readline()
 
         // Serial.println(value);
         if ((value < 50 && !invertedLine) || (value > 50 && invertedLine)) // 50 is middle value
-        {                                                            // More than 800 = White
+        {                                                                  // More than 800 = White
             onLine = 1;
             avg += value * (i * 100);
             sum += value;
@@ -204,12 +204,25 @@ void lineFollow90Left(int setSpeed, float iKP, float iKD)
     int avgLeftVal = (Sensor_Max[NumSensor - 2] + Sensor_Min[NumSensor - 2]) / 2;
     int avgLeftestVal = (Sensor_Max[NumSensor - 1] + Sensor_Min[NumSensor - 1]) / 2;
 
-    while (leftVal > avgLeftVal || leftestVal > avgLeftestVal)
+    if (invertedLine)
     {
-        leftVal = analog(Pin_Setup[NumSensor - 2]);
-        leftestVal = analog(Pin_Setup[NumSensor - 1]);
+        while (leftVal < avgLeftVal || leftestVal < avgLeftestVal)
+        {
+            leftVal = analog(Pin_Setup[NumSensor - 2]);
+            leftestVal = analog(Pin_Setup[NumSensor - 1]);
 
-        trackPID(setSpeed, iKP, iKD);
+            trackPID(setSpeed, iKP, iKD);
+        }
+    }
+    else
+    {
+        while (leftVal > avgLeftVal || leftestVal > avgLeftestVal)
+        {
+            leftVal = analog(Pin_Setup[NumSensor - 2]);
+            leftestVal = analog(Pin_Setup[NumSensor - 1]);
+
+            trackPID(setSpeed, iKP, iKD);
+        }
     }
     motor(2, 0);
     motor(3, 0);
@@ -223,11 +236,23 @@ void lineFollow90Right(int setSpeed, float iKP, float iKD)
     int avgRightVal = (Sensor_Max[NumSensor - 2] + Sensor_Min[NumSensor - 2]) / 2;
     int avgRightestVal = (Sensor_Max[NumSensor - 1] + Sensor_Min[NumSensor - 1]) / 2;
 
-    while (rightVal > avgRightVal || rightestVal > avgRightestVal)
+    if (invertedLine)
     {
-        rightVal = analog(Pin_Setup[NumSensor - 2]);
-        rightestVal = analog(Pin_Setup[NumSensor - 1]);
-        trackPID(setSpeed, iKP, iKD);
+        while (rightVal < avgRightVal || rightestVal < avgRightestVal)
+        {
+            rightVal = analog(Pin_Setup[NumSensor - 2]);
+            rightestVal = analog(Pin_Setup[NumSensor - 1]);
+            trackPID(setSpeed, iKP, iKD);
+        }
+    }
+    else
+    {
+        while (rightVal > avgRightVal || rightestVal > avgRightestVal)
+        {
+            rightVal = analog(Pin_Setup[NumSensor - 2]);
+            rightestVal = analog(Pin_Setup[NumSensor - 1]);
+            trackPID(setSpeed, iKP, iKD);
+        }
     }
     motor(2, 0);
     motor(3, 0);
@@ -237,12 +262,23 @@ void lineFollowTurnLeft(int speedM)
 {
     motor(2, -speedM);
     motor(3, speedM);
-    delay(20);
-    do
+    delay(70);
+    if (invertedLine)
     {
-        motor(2, -speedM);
-        motor(3, speedM);
-    } while (analog(Pin_Setup[NumSensor - 1]) > (Sensor_Max[NumSensor - 1] + Sensor_Min[NumSensor - 1]) / 2);
+        do
+        {
+            motor(2, -speedM);
+            motor(3, speedM);
+        } while (analog(Pin_Setup[NumSensor - 1]) < (Sensor_Max[NumSensor - 1] + Sensor_Min[NumSensor - 1]) / 2);
+    }
+    else
+    {
+        do
+        {
+            motor(2, -speedM);
+            motor(3, speedM);
+        } while (analog(Pin_Setup[NumSensor - 1]) > (Sensor_Max[NumSensor - 1] + Sensor_Min[NumSensor - 1]) / 2);
+    }
     motor(2, 0);
     motor(3, 0);
 }
@@ -251,12 +287,23 @@ void lineFollowTurnRight(int speedM)
 {
     motor(2, speedM);
     motor(3, -speedM);
-    delay(20);
-    do
+    delay(70);
+    if (invertedLine)
     {
-        motor(2, speedM);
-        motor(3, -speedM);
-    } while (analog(Pin_Setup[0]) > (Sensor_Max[0] + Sensor_Min[0]) / 2);
+        do
+        {
+            motor(2, speedM);
+            motor(3, -speedM);
+        } while (analog(Pin_Setup[0]) > (Sensor_Max[0] + Sensor_Min[0]) / 2);
+    }
+    else
+    {
+        do
+        {
+            motor(2, speedM);
+            motor(3, -speedM);
+        } while (analog(Pin_Setup[0]) > (Sensor_Max[0] + Sensor_Min[0]) / 2);
+    }
     motor(2, 0);
     motor(3, 0);
 }
@@ -398,8 +445,9 @@ void readSensor()
 
             // Serial
             Serial.print("| Sensor 6 = ");
-            Serial.println(valSensor6);
+            Serial.print(valSensor6);
         }
+        Serial.println(" ");
         delay(50);
     }
 }
