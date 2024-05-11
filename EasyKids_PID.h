@@ -23,7 +23,7 @@ float output = 0;
 float derivative;
 float previous_error = setPoint;
 
-void setSensorMin(int s0, int s1, int s2, int s3, int s4 = 10, int s5 = 10, int s6 = 10)
+void setSensorMin(int s0, int s1, int s2 = 10, int s3 = 10, int s4 = 10, int s5 = 10, int s6 = 10)
 {
     Sensor_Min[0] = s0;
     Sensor_Min[1] = s1;
@@ -34,7 +34,7 @@ void setSensorMin(int s0, int s1, int s2, int s3, int s4 = 10, int s5 = 10, int 
     Sensor_Min[6] = s6;
 }
 
-void setSensorMax(int s0, int s1, int s2, int s3, int s4 = 10, int s5 = 10, int s6 = 10)
+void setSensorMax(int s0, int s1, int s2 = 4000, int s3 = 4000, int s4 = 4000, int s5 = 4000, int s6 = 4000)
 {
     Sensor_Max[0] = s0;
     Sensor_Max[1] = s1;
@@ -65,30 +65,31 @@ int readline()
     {
         long value = 0;
 
-        if (invertedLine)
-        { // White line
-            value = map(analog(Pin_Setup[i]), Sensor_Min[i], Sensor_Max[i], 100, 1);
+        value = clamp(map(analog(Pin_Setup[i]), Sensor_Min[i], Sensor_Max[i], 1, 100), 1, 100);
+        if (invertedLine) // White line
+        { 
+            value = 101 - value;
         }
-        else
-        { // Black line
-            value = map(analog(Pin_Setup[i]), Sensor_Min[i], Sensor_Max[i], 1, 100);
-        }
-        value = clamp(value, 1, 100);
 
-        // Serial.println(value);
-        if ((value < 50 && !invertedLine) || (value > 50 && invertedLine)) // 50 is middle value
+        if(value < 50)
         {                                                                  // More than 800 = White
             onLine = 1;
             avg += value * (i * 100);
             sum += value;
         }
+
+        // Serial.print("Sensor ");
+        // Serial.print(i);
+        // Serial.print(": ");
+        // Serial.print(value);
+        // Serial.print(" / ");
     }
-    // Serial.println(" ");
+    // Serial.println("");
 
     if (onLine == 0)
     {
-        if (((lastPosition <= ((NumSensor - 1) * 100) / 2) && invertedLine) || // White line
-            ((lastPosition >= ((NumSensor - 1) * 100) / 2) && !invertedLine))  // Black line
+        if (((lastPosition >= ((NumSensor - 1) * 100) / 2) && invertedLine) || // White line
+            ((lastPosition <= ((NumSensor - 1) * 100) / 2) && !invertedLine))  // Black line
         {
             lastPosition = (NumSensor - 1) * 100; // Middle value
         }
@@ -117,11 +118,11 @@ void trackPID(int min_speed, float iKP, float iKD)
     leftMotor = clamp(min_speed + output, -100, 100);
     rightMotor = clamp(min_speed - output, -100, 100);
 
-    motor(2, leftMotor);
-    motor(3, rightMotor);
+    motor(1, leftMotor);
+    motor(4, rightMotor);
 }
 
-void lineFollowTime(int speed, float iKP, float iKD, int setTime)
+void lineFollowTime(int speed, float iKP, float iKD, long setTime)
 {
 
     long timeSince = 0;
@@ -130,8 +131,8 @@ void lineFollowTime(int speed, float iKP, float iKD, int setTime)
     {
         trackPID(speed, iKP, iKD);
     }
-    motor(2, 0);
-    motor(3, 0);
+    motor(1, 0);
+    motor(4, 0);
 }
 
 void lineFollowCross(int setSpeed, float iKP, float iKD)
@@ -160,8 +161,8 @@ void lineFollowCross(int setSpeed, float iKP, float iKD)
             trackPID(setSpeed, iKP, iKD);
         }
     }
-    motor(2, 0);
-    motor(3, 0);
+    motor(1, 0);
+    motor(4, 0);
 }
 
 void lineFollowFork(int setSpeed, float iKP, float iKD)
@@ -192,8 +193,8 @@ void lineFollowFork(int setSpeed, float iKP, float iKD)
             trackPID(setSpeed, iKP, iKD);
         }
     }
-    motor(2, 0);
-    motor(3, 0);
+    motor(1, 0);
+    motor(4, 0);
 }
 
 void lineFollow90Left(int setSpeed, float iKP, float iKD)
@@ -224,24 +225,24 @@ void lineFollow90Left(int setSpeed, float iKP, float iKD)
             trackPID(setSpeed, iKP, iKD);
         }
     }
-    motor(2, 0);
-    motor(3, 0);
+    motor(1, 0);
+    motor(4, 0);
 }
 
 void lineFollow90Right(int setSpeed, float iKP, float iKD)
 {
-    int rightVal = analog(Pin_Setup[NumSensor - 2]);
-    int rightestVal = analog(Pin_Setup[NumSensor - 1]);
+    int rightVal = analog(Pin_Setup[0]);
+    int rightestVal = analog(Pin_Setup[1]);
 
-    int avgRightVal = (Sensor_Max[NumSensor - 2] + Sensor_Min[NumSensor - 2]) / 2;
-    int avgRightestVal = (Sensor_Max[NumSensor - 1] + Sensor_Min[NumSensor - 1]) / 2;
+    int avgRightVal = (Sensor_Max[0] + Sensor_Min[0]) / 2;
+    int avgRightestVal = (Sensor_Max[1] + Sensor_Min[1]) / 2;
 
     if (invertedLine)
     {
         while (rightVal < avgRightVal || rightestVal < avgRightestVal)
         {
-            rightVal = analog(Pin_Setup[NumSensor - 2]);
-            rightestVal = analog(Pin_Setup[NumSensor - 1]);
+            rightVal = analog(Pin_Setup[0]);
+            rightestVal = analog(Pin_Setup[1]);
             trackPID(setSpeed, iKP, iKD);
         }
     }
@@ -249,63 +250,63 @@ void lineFollow90Right(int setSpeed, float iKP, float iKD)
     {
         while (rightVal > avgRightVal || rightestVal > avgRightestVal)
         {
-            rightVal = analog(Pin_Setup[NumSensor - 2]);
-            rightestVal = analog(Pin_Setup[NumSensor - 1]);
+            rightVal = analog(Pin_Setup[0]);
+            rightestVal = analog(Pin_Setup[1]);
             trackPID(setSpeed, iKP, iKD);
         }
     }
-    motor(2, 0);
-    motor(3, 0);
+    motor(1, 0);
+    motor(4, 0);
 }
 
 void lineFollowTurnLeft(int speedM)
 {
-    motor(2, -speedM);
-    motor(3, speedM);
+    motor(1, -speedM);
+    motor(4, speedM);
     delay(70);
     if (invertedLine)
     {
         do
         {
-            motor(2, -speedM);
-            motor(3, speedM);
+            motor(1, -speedM);
+            motor(4, speedM);
         } while (analog(Pin_Setup[NumSensor - 1]) < (Sensor_Max[NumSensor - 1] + Sensor_Min[NumSensor - 1]) / 2);
     }
     else
     {
         do
         {
-            motor(2, -speedM);
-            motor(3, speedM);
+            motor(1, -speedM);
+            motor(4, speedM);
         } while (analog(Pin_Setup[NumSensor - 1]) > (Sensor_Max[NumSensor - 1] + Sensor_Min[NumSensor - 1]) / 2);
     }
-    motor(2, 0);
-    motor(3, 0);
+    motor(1, 0);
+    motor(4, 0);
 }
 
 void lineFollowTurnRight(int speedM)
 {
-    motor(2, speedM);
-    motor(3, -speedM);
+    motor(1, speedM);
+    motor(4, -speedM);
     delay(70);
     if (invertedLine)
     {
         do
         {
-            motor(2, speedM);
-            motor(3, -speedM);
-        } while (analog(Pin_Setup[0]) > (Sensor_Max[0] + Sensor_Min[0]) / 2);
+            motor(1, speedM);
+            motor(4, -speedM);
+        } while (analog(Pin_Setup[0]) < (Sensor_Max[0] + Sensor_Min[0]) / 2);
     }
     else
     {
         do
         {
-            motor(2, speedM);
-            motor(3, -speedM);
+            motor(1, speedM);
+            motor(4, -speedM);
         } while (analog(Pin_Setup[0]) > (Sensor_Max[0] + Sensor_Min[0]) / 2);
     }
-    motor(2, 0);
-    motor(3, 0);
+    motor(1, 0);
+    motor(4, 0);
 }
 
 void readSensor()

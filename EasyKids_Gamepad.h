@@ -88,7 +88,7 @@ void JoyController() {
       joyRY = map(joy->axisRY(), -508, 512, 100, -100);
       joyButton = joy->buttons();
       joyPad = joy->dpad();
-      Serial.println(joyPad);
+    //  Serial.println(joyPad);
       if (joyButton == 1) {
         joyCross = 1;
       } else if (joyButton == 2) {
