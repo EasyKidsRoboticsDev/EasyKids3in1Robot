@@ -4,27 +4,33 @@
 Connect IMU - BNO055
 
 <<<<< Command >>>>>
-  EasyKidsIMUsetup(); // IMU Setup
-  resetGyro(); // Reset Gyro Direction
-  getProcessedGyro(); // Get Gyro Direction (float)
+  IMUsetup(); // IMU Setup
+  resetAngle(); // Reset Gyro Direction
+  getAngle(); // Get Gyro Direction (float)
 
-  forwardTimeIMU(Speed, Timer, KP, KD); 
-  backwardTimeIMU(Speed, Timer, KP, KD); 
+  forwardIMU(Speed, KP, KD); 
+  backwardIMU(Speed, KP, KD); 
+  slideLeftIMU(Speed, KP, KD); 
+  slideRightIMU(Speed, KP, KD); 
+
   spinLeftIMU(Speed, Angle); 
   spinRightIMU(Speed, Angle); 
-  slideLeftIMU(Speed, Timer, KP, KD); 
-  slideRightIMU(Speed, Timer, KP, KD); 
+
+  forwardTimerIMU(Speed, KP, KD, Timer); 
+  backwardTimerIMU(Speed, KP, KD, Timer); 
+  slideLeftTimerIMU(Speed, KP, KD, Timer); 
+  slideRightTimerIMU(Speed, KP, KD, Timer); 
 */
 
 void setup() {
   EasyKids_Setup();
-  EasyKidsIMUsetup(); // IMU Setup
+  IMUsetup(); // IMU Setup
 }
 
 void loop() {
-  forwardTimeIMU(50, 1000, 1.0, 0.1); 
+  forwardTimerIMU(50, 1.0, 0.1, 1000); 
   spinLeftIMU(30, 90); 
-  slideRightIMU(50, 1000, 1.0, 0.1); 
+  slideRightTimerIMU(50, 1.0, 0.1, 1000); 
   delay(5000);
 }
 

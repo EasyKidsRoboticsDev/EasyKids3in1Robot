@@ -56,7 +56,7 @@ void sensorNum(int num)
 void whiteLine() { invertedLine = true; }
 void blackLine() { invertedLine = false; }
 
-int readline()
+int getPostion()
 {
     int onLine = 0; // Check if robot still on line (Atleast 1 sensor)
     long avg = 0;
@@ -105,13 +105,13 @@ int readline()
     return round(((NumSensor - 1) * 100) - lastPosition);
 }
 
-void trackPID(int min_speed, float iKP, float iKD)
+void lineFollow(int min_speed, float iKP, float iKD)
 {
     KP = iKP / 10;
     KD = iKD / 10;
 
-    errors = (readline() - setPoint);
-    Serial.println(readline());
+    errors = (getPostion() - setPoint);
+    Serial.println(getPostion());
     derivative = (errors - previous_error);
     output = (KP * errors) + (KD * derivative);
     previous_error = errors;
@@ -122,14 +122,14 @@ void trackPID(int min_speed, float iKP, float iKD)
     motor(4, rightMotor);
 }
 
-void lineFollowTime(int speed, float iKP, float iKD, long setTime)
+void lineFollowTimer(int speed, float iKP, float iKD, long setTime)
 {
 
     long timeSince = 0;
     timeSince = millis();
     while ((millis() - timeSince) < setTime)
     {
-        trackPID(speed, iKP, iKD);
+        lineFollow(speed, iKP, iKD);
     }
     motor(1, 0);
     motor(4, 0);
@@ -149,7 +149,7 @@ void lineFollowCross(int setSpeed, float iKP, float iKD)
         {
             rightVal = analog(Pin_Setup[0]);
             leftVal = analog(Pin_Setup[NumSensor - 1]);
-            trackPID(setSpeed, iKP, iKD);
+            lineFollow(setSpeed, iKP, iKD);
         }
     }
     else
@@ -158,7 +158,7 @@ void lineFollowCross(int setSpeed, float iKP, float iKD)
         {
             rightVal = analog(Pin_Setup[0]);
             leftVal = analog(Pin_Setup[NumSensor - 1]);
-            trackPID(setSpeed, iKP, iKD);
+            lineFollow(setSpeed, iKP, iKD);
         }
     }
     motor(1, 0);
@@ -180,7 +180,7 @@ void lineFollowFork(int setSpeed, float iKP, float iKD)
             outerRightVal = analog(Pin_Setup[0]);
             outerLeftVal = analog(Pin_Setup[NumSensor - 1]);
 
-            trackPID(setSpeed, iKP, iKD);
+            lineFollow(setSpeed, iKP, iKD);
         }
     }
     else
@@ -190,7 +190,7 @@ void lineFollowFork(int setSpeed, float iKP, float iKD)
             outerRightVal = analog(Pin_Setup[0]);
             outerLeftVal = analog(Pin_Setup[NumSensor - 1]);
 
-            trackPID(setSpeed, iKP, iKD);
+            lineFollow(setSpeed, iKP, iKD);
         }
     }
     motor(1, 0);
@@ -212,7 +212,7 @@ void lineFollow90Left(int setSpeed, float iKP, float iKD)
             leftVal = analog(Pin_Setup[NumSensor - 2]);
             leftestVal = analog(Pin_Setup[NumSensor - 1]);
 
-            trackPID(setSpeed, iKP, iKD);
+            lineFollow(setSpeed, iKP, iKD);
         }
     }
     else
@@ -222,7 +222,7 @@ void lineFollow90Left(int setSpeed, float iKP, float iKD)
             leftVal = analog(Pin_Setup[NumSensor - 2]);
             leftestVal = analog(Pin_Setup[NumSensor - 1]);
 
-            trackPID(setSpeed, iKP, iKD);
+            lineFollow(setSpeed, iKP, iKD);
         }
     }
     motor(1, 0);
@@ -243,7 +243,7 @@ void lineFollow90Right(int setSpeed, float iKP, float iKD)
         {
             rightVal = analog(Pin_Setup[0]);
             rightestVal = analog(Pin_Setup[1]);
-            trackPID(setSpeed, iKP, iKD);
+            lineFollow(setSpeed, iKP, iKD);
         }
     }
     else
@@ -252,7 +252,7 @@ void lineFollow90Right(int setSpeed, float iKP, float iKD)
         {
             rightVal = analog(Pin_Setup[0]);
             rightestVal = analog(Pin_Setup[1]);
-            trackPID(setSpeed, iKP, iKD);
+            lineFollow(setSpeed, iKP, iKD);
         }
     }
     motor(1, 0);

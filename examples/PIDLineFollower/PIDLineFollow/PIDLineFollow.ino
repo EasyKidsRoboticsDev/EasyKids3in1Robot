@@ -13,6 +13,8 @@ Connect Motot Right >>> M2
   whiteLine();
 
   // sensorNum(amount) --> 4-7 sensors
+  // Exception: 2-3 sensors is possible but only the 
+  // lineFollow and lineFollowTimer function works.
 
   // Example: 5 Sensors
   sensorNum(4);
@@ -24,8 +26,8 @@ Connect Motot Right >>> M2
   setSensorMin(s0, s1, s2, s3, s4, s5);
   setSensorMax(s0, s1, s2, s3, s4, s5);
 
-  trackPID(Speed, KP, KD);
-  lineFollowTime(Speed, KP, KD, Time(ms)); 
+  lineFollow(Speed, KP, KD);
+  lineFollowTimer(Speed, KP, KD, Time(ms)); 
   lineFollowCross(Speed, KP, KD); 
   lineFollowFork(Speed, KP, KD); 
   lineFollow90Left(Speed, KP, KD); 
@@ -53,9 +55,9 @@ void loop() {
   waitForStart(); 
   beep(); 
 
-  lineFollowTime(20, 1.0, 1.0, 1000); //lineFollowTime (Speed, KP, KD, Time(ms));
+  lineFollowTimer(20, 1.0, 1.0, 1000); //lineFollowTime (Speed, KP, KD, Time(ms));
   lineFollowCross(30, 1.0, 1.0); //lineFollowCross(Speed, KP, KD);
-  lineFollowTime(35, 1.0, 1.0, 5000); //lineFollowTime (Speed, KP, KD, Time(ms));
+  lineFollowTimer(35, 1.0, 1.0, 5000); //lineFollowTime (Speed, KP, KD, Time(ms));
   lineFollowTurnLeft(30);// lineTurnLeft(Speed);
  
 }

@@ -7,7 +7,10 @@ sensors_event_t orientationData;
 float resetValue, currentOrientation = 0;
 bool resetIMU = false;
 
-void EasyKidsIMUsetup() { //******///
+float lastError = 0.0;
+int pidOutput = 0;
+
+void IMUsetup() { //******///
   /* Initialise the sensor */
   bno = Adafruit_BNO055(55, 0x28, &Wire);
   if (!bno.begin())
@@ -24,7 +27,7 @@ int clamp(int value, int lowerLim, int HigherLim)
 }
 
 
-float getProcessedGyro()
+float getAngle()
 {
   delay(10); // To avoid getting readings too fast
 
@@ -56,22 +59,40 @@ float getProcessedGyro()
   return orientate;
 }
 
-void resetGyro()
+void resetAngle()
 {           
   resetIMU = true;
-  getProcessedGyro();
+  getAngle();
 }
 
-void forwardTimeIMU(int speed, float timer, float kP, float kD)
+void forwardIMU(int speed, float kP, float kD)
 {
-  float lastError = 0.0;
+  lastError = 0.0;
+  pidOutput = 0;
+
+  currentOrientation = getAngle(); 
+  Serial.println(currentOrientation);
+
+  pidOutput = clamp(int(kP * currentOrientation + kD * (currentOrientation - lastError)), -speed, speed);
+  lastError = currentOrientation;
+
+  motor(1, speed - pidOutput);
+  motor(2, speed - pidOutput);
+
+  motor(3, speed + pidOutput);
+  motor(4, speed + pidOutput);
+}
+
+void forwardTimerIMU(int speed, float kP, float kD, float timer)
+{
+  lastError = 0.0;
+  pidOutput = 0;
   float timeSince = millis();
-  int pidOutput = 0;
-  resetGyro();
+  resetAngle();
 
   while(millis() - timeSince < timer)
   {
-    currentOrientation = getProcessedGyro(); 
+    currentOrientation = getAngle(); 
     Serial.println(currentOrientation);
 
     pidOutput = clamp(int(kP * currentOrientation + kD * (currentOrientation - lastError)), -speed, speed);
@@ -86,16 +107,34 @@ void forwardTimeIMU(int speed, float timer, float kP, float kD)
   motorStopAll();
 }
 
-void backwardTimeIMU(int speed, float timer, float kP, float kD)
+void backwardIMU(int speed, float kP, float kD)
 {
-  float lastError = 0.0;
+  lastError = 0.0;
+  pidOutput = 0;
+
+  currentOrientation = getAngle(); 
+  Serial.println(currentOrientation);
+
+  pidOutput = clamp(int(kP * currentOrientation + kD * (currentOrientation - lastError)), -speed, speed);
+  lastError = currentOrientation;
+
+  motor(1, -speed - pidOutput);
+  motor(2, -speed - pidOutput);
+
+  motor(3, -speed + pidOutput);
+  motor(4, -speed + pidOutput);
+}
+
+void backwardTimerIMU(int speed, float kP, float kD, float timer)
+{
+  lastError = 0.0;
+  pidOutput = 0;
   float timeSince = millis();
-  int pidOutput = 0;
-  resetGyro();
+  resetAngle();
 
   while(millis() - timeSince < timer)
   {
-    currentOrientation = getProcessedGyro(); 
+    currentOrientation = getAngle(); 
     Serial.println(currentOrientation);
 
     pidOutput = clamp(int(kP * currentOrientation + kD * (currentOrientation - lastError)), -speed, speed);
@@ -114,11 +153,11 @@ void spinLeftIMU(int speed, int angleSetPoint)
 {
   float error = 1000.0;
   angleSetPoint = -clamp(angleSetPoint, 0, 180);
-  resetGyro(); 
+  resetAngle(); 
 
   while(abs(error) > 1)
   {
-    currentOrientation = getProcessedGyro();   
+    currentOrientation = getAngle();   
     error = angleSetPoint - currentOrientation;
     if(abs(error) < 30) { speed = 10; }
 
@@ -129,11 +168,11 @@ void spinLeftIMU(int speed, int angleSetPoint)
     motor(4, speed);
   }
 
-  currentOrientation = getProcessedGyro();  
+  currentOrientation = getAngle();  
   error = angleSetPoint - currentOrientation;
   while(abs(error) > 1)
   {
-    currentOrientation = getProcessedGyro();   
+    currentOrientation = getAngle();   
     error = angleSetPoint - currentOrientation;
 
     motor(1, 10);
@@ -151,11 +190,11 @@ void spinRightIMU(int speed, int angleSetPoint)
 {
   float error = 1000.0;
   angleSetPoint = clamp(angleSetPoint, 0, 180);
-  resetGyro(); 
+  resetAngle(); 
 
   while(abs(error) > 1)
   {
-    currentOrientation = getProcessedGyro();   
+    currentOrientation = getAngle();   
     error = angleSetPoint - currentOrientation;
     if(abs(error) < 30) { speed = 10; }
 
@@ -166,11 +205,11 @@ void spinRightIMU(int speed, int angleSetPoint)
     motor(4, -speed);
   }
 
-  currentOrientation = getProcessedGyro();  
+  currentOrientation = getAngle();  
   error = angleSetPoint - currentOrientation;
   while(abs(error) > 1)
   {
-    currentOrientation = getProcessedGyro();   
+    currentOrientation = getAngle();   
     error = angleSetPoint - currentOrientation;
 
     motor(1, -10);
@@ -184,16 +223,34 @@ void spinRightIMU(int speed, int angleSetPoint)
   motorStopAll();
 }
 
-void slideRightIMU(int speed, float timer, float kP, float kD)
+void slideRightIMU(int speed, float kP, float kD)
 {
-  float lastError = 0.0;
+  lastError = 0.0;
+  pidOutput = 0;
+
+  currentOrientation = getAngle(); 
+  Serial.println(currentOrientation);
+
+  pidOutput = clamp(int(kP * currentOrientation + kD * (currentOrientation - lastError)), -speed, speed);
+  lastError = currentOrientation;
+
+  motor(1, speed - pidOutput);
+  motor(2, -speed - pidOutput);
+
+  motor(3, -speed + pidOutput);
+  motor(4, speed + pidOutput);
+}
+
+void slideRightTimerIMU(int speed, float kP, float kD, float timer)
+{
+  lastError = 0.0;
+  pidOutput = 0;
   float timeSince = millis();
-  int pidOutput = 0;
-  resetGyro();
+  resetAngle();
 
   while(millis() - timeSince < timer)
   {
-    currentOrientation = getProcessedGyro(); 
+    currentOrientation = getAngle(); 
     Serial.println(currentOrientation);
 
     pidOutput = clamp(int(kP * currentOrientation + kD * (currentOrientation - lastError)), -speed, speed);
@@ -209,16 +266,34 @@ void slideRightIMU(int speed, float timer, float kP, float kD)
   motorStopAll();
 }
 
-void slideLeftIMU(int speed, float timer, float kP, float kD)
+void slideLeftIMU(int speed, float kP, float kD)
 {
-  float lastError = 0.0;
+  lastError = 0.0;
+  pidOutput = 0;
+
+  currentOrientation = getAngle(); 
+  Serial.println(currentOrientation);
+
+  pidOutput = clamp(int(kP * currentOrientation + kD * (currentOrientation - lastError)), -speed, speed);
+  lastError = currentOrientation;
+
+  motor(1, -speed - pidOutput);
+  motor(2, speed - pidOutput);
+
+  motor(3, speed + pidOutput);
+  motor(4, -speed + pidOutput);
+}
+
+void slideLeftTimerIMU(int speed, float kP, float kD, float timer)
+{
+  lastError = 0.0;
+  pidOutput = 0;
   float timeSince = millis();
-  int pidOutput = 0;
-  resetGyro();
+  resetAngle();
 
   while(millis() - timeSince < timer)
   {
-    currentOrientation = getProcessedGyro(); 
+    currentOrientation = getAngle(); 
     Serial.println(currentOrientation);
 
     pidOutput = clamp(int(kP * currentOrientation + kD * (currentOrientation - lastError)), -speed, speed);
