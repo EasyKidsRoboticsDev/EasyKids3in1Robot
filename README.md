@@ -31,7 +31,7 @@
 Package บอร์ด EasyKids3in1 Update (25/5/2025)
 
 Add Board to Arduino : 
-* Copy ลิ้งนี้ >>> : [https://github.com/EasyKidsRoboticsDev/arduino-easykidsrobotics/releases/download/4.3.3/package_easykidsrobotics_index.json]
+* Copy ลิ้งนี้ >>> : [https://github.com/EasyKidsRoboticsDev/arduino-easykidsrobotics/releases/download/4.3.3/package_easykidsrobotics_index.json](https://github.com/EasyKidsRoboticsDev/arduino-easykidsrobotics/releases/download/4.3.3/package_easykidsrobotics_index.json)
   
 ![268210153-3b153bd6-6cb8-49cb-9bb9-1c09fb380ef0](https://github.com/user-attachments/assets/2514ba2f-4247-47b5-ac75-74ba090fcdce)
 
