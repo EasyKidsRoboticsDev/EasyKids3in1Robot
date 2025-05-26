@@ -17,9 +17,9 @@
 ![Poster Back A4](https://github.com/user-attachments/assets/a1911f93-94a1-4c7d-984d-04546fb70ecf)
 
 
-## **How to Install**
+## **How to Install** Please  Update Arudino IDE Version 2.3.6 หรือ สูงกว่า
 
-1. เพิ่มบอร์ด EasyKids3in1 ใน Arduino IDE 
+1. เพิ่มบอร์ด EasyKids3in1 ใน Arduino IDE  
 1. เลือก Library EasyKids3in1 ใน Arduino IDE
 
 ## **การเพิ่มบอร์ด EasyKids3in1 ใน Arduino IDE**
@@ -28,9 +28,10 @@
 (Mac OS) เลือกที่ Arduino IDE >>> Settings... 
 ![268210068-dd8353f5-ace5-41e8-b70e-48a8405cdbff](https://github.com/user-attachments/assets/7d0522e5-8a8a-418a-9da4-225f2e83c7b4)
 
-Package บอร์ด EasyKids3in1 
+Package บอร์ด EasyKids3in1 Update (25/5/2025)
 
-* Copy ลิ้งนี้ >>> : https://github.com/EasyKidsRoboticsDev/arduino-easykidsrobotics/releases/download/4.3.3/package_easykidsrobotics_index.json
+Add Board to Arduino : 
+* Copy ลิ้งนี้ >>> : [https://github.com/EasyKidsRoboticsDev/arduino-easykidsrobotics/releases/download/4.3.3/package_easykidsrobotics_index.json]
   
 ![268210153-3b153bd6-6cb8-49cb-9bb9-1c09fb380ef0](https://github.com/user-attachments/assets/2514ba2f-4247-47b5-ac75-74ba090fcdce)
 
